@@ -1,5 +1,5 @@
 import mysql from 'mysql2/promise';
-import { Post } from '../types/Post.ts'
+import type { Post } from '../types/Post.js'
 
 const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
 
@@ -18,12 +18,13 @@ const pool = mysql.createPool({
     queueLimit: 5  // Maximum number of connections in the pool
 });
 
-export const getAllPosts = async () => {
+export const getAllPosts = async (): Promise<Post[]> => {
     const [rows] = await pool.query('SELECT * FROM posts');
-    return rows;
+    return rows as Post[];
 }
 
 export const getPostById = async (id: number): Promise<Post | undefined> => {
+    // destructure only the rows from the result
     const [rows] = await pool.query('SELECT * FROM posts WHERE id = ?', [id]);
-    return rows[0] as Post | undefined;;
+    return (rows as Post[])[0];
 }
